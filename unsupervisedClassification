@@ -23,7 +23,7 @@ times = len(onlyInFiles)
 for i in range(1, times):
     if ".rgf" in onlyInFiles[i]:
         inputImage  = onlyInFiles[i]
-        newFileName = inputImage[0:(len(inputImage)-4)] + "_isodata"
+        newFileName = inputImage[0:(len(inputImage)-4)] + "_isodata.rst"
         print newFileName
         IdrApi.RunModule('ISODATA',  inputImage, 4, 'FALSE', newFileName, 16, 32, 2)
         print onlyInFiles[i], i
