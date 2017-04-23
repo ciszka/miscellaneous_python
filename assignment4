@@ -1,0 +1,24 @@
+#Paulina Przystupa
+#18 September 2014
+#Assignment 4
+#Given the following list  and apply the bubble sort:
+#Write down the contents of the list after each step of the iteration for all interations.(Note you can use an excel table to organize your resutls.)
+#Extra credit) Write a function that loads an unsorted list, and returns a sorted list (note: part 1 can be integrated into part 2, that as your function execute, you can print the result of each step)
+
+#Define a list
+lis1 = [ 32, 39, 44, 67, 75, 3, 18, 29] 
+
+#Define a function to sort this list
+def sortList(tmpList):
+   count = 1
+   print "The original order is:", tmpList #print the original list
+   for i in range(len(tmpList)): #cycle through each position
+      for j in range(len(tmpList)-1): #cycle through and swap
+         if tmpList[j] > tmpList[j+1]: #if number at a given index is larger than the next one swap
+            small = tmpList[j+1] #store the smaller value
+            tmpList[j+1] = tmpList[j] #change value in list to a higher position
+            tmpList[j] = small #put smaller value in the right spot
+            print "Then we swapped like this during round", count, ":", tmpList #print the newly swapped list
+         count += 1
+         
+sortList(lis1) #executes the function above
