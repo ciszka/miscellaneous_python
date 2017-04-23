@@ -1,0 +1,36 @@
+#This code is copied from a terrset/idiris API download for using python to automate things in terrset
+
+import win32com.client
+import os
+
+IdrApi = win32com.client.Dispatch('idrisi32.IdrisiAPIServer')
+
+# get current script dir
+# if data and the script are not in the same location,
+# comment out the next line and replace 'path' with directory of your data
+path = os.getcwd()
+
+# set current working dir
+#IdrApi.SetWorkingDir('D:/test/growth project')
+IdrApi.SetWorkingDir(path)
+
+inputImage  = 'residential91.rst'
+times = 5
+
+for i in range(1, times+1):
+    IdrApi.RunModule('FILTER',  inputImage + '*proximity.rst*7*Filter2.fil*1', 1, '', '', '', '', 1)
+    IdrApi.RunModule('RANDOM',  'random-seed.rst*1*2*landuse91.rst*2*0.02*0.01', 1, '', '', '', '', 1)
+    IdrApi.RunModule('RECLASS', 'I*' + inputImage + '*non-residential.rst*3*Reverse.rcl', 1, '', '', '', '', 1)
+    IdrApi.RunModule('OVERLAY', '3*ldressuit.rst*proximity.rst*downweight.rst', 1, '', '', '', '', 1)
+    IdrApi.RunModule('OVERLAY', '9*downweight.rst*random-seed.rst*combined-suit.rst', 1, '', '', '', '', 1)
+    IdrApi.RunModule('OVERLAY', '3*combined-suit.rst*forest91.rst*suit-within-forest.rst', 1, '', '', '', '', 1)
+    IdrApi.RunModule('OVERLAY', '3*non-residential.rst*suit-within-forest.rst*final-suitability.rst', 1, '', '', '', '', 1)
+    IdrApi.RunModule('STRETCH', 'final-suitability.rst*rescaled.rst*1*min*max*N*256*unspecified', 1, '', '', '', '', 1)
+    IdrApi.RunModule('RANK',    'rescaled.rst*none*ranked-suitability.rst*D', 1, '', '', '', '', 1)
+    IdrApi.RunModule('RECLASS', 'I*ranked-suitability.rst*best-areas.rst*3*Growth.rcl', 1, '', '', '', '', 1)
+    tmpFile = 'new-resid-' + str(i) + '.rst'
+    IdrApi.RunModule('OVERLAY', '7*best-areas.rst*residential91.rst*' + tmpFile , 1, '', '', '', '', 1)
+    IdrApi.RunModule('OVERLAY', '1*' + tmpFile + '*residential91.rst*growth-' + str(i) + '.rst', 1, '', '', '', '', 1)
+    IdrApi.DisplayFile('growth-' + str(i) + '.rst', 'idris256');
+    print 'run ', i
+print 'done'    
