@@ -3,29 +3,29 @@ import os
 from os import listdir
 from os.path import isfile, join
 
-
 IdrApi = win32com.client.Dispatch('idrisi32.IdrisiAPIServer')
 
 # get current script dir
 # if data and the script are not in the same location,
 # comment out the next line and replace 'path' with directory of your data
-# pathDirectory = need to put the path that I am interested in putting the files
-# path = the path for where I'm getting the information
+
+pathDirectory = "E:\\RemoteSensingClass\\Project\\TerrSetFiles\\OutsideStudyArea"
+path = "E:\\RemoteSensingClass\\Project\\TerrSetFiles\\OutsideStudyArea"
+
 # set current working dir
 IdrApi.SetWorkingDir(pathDirectory)
 IdrApi.SetWorkingDir(path)
 
 #create a list of files from the location
-onlyInFiles = [f for f in listdir(path) if isfile(join(mypath, f))]
+onlyInFiles = [f for f in listdir(path) if isfile(join(path, f))]
 times = len(onlyInFiles)
 
 for i in range(1, times):
-    # I need to an if else statement here for only
-    
     if ".rgf" in onlyInFiles[i]:
         inputImage  = onlyInFiles[i]
-        newFileName = inputImage[0:len(inputImage-4)] + "_isodata"
-        IdrApi.RunModule('ISODATA',  inputImage, 4, TRUE, newFileName, 16, 32, 'RANDOM PARTITION', 1.0, 50, 100, 30, 15, 2)
-    print 'run ', i
+        newFileName = inputImage[0:(len(inputImage)-4)] + "_isodata"
+        print newFileName
+        IdrApi.RunModule('ISODATA',  inputImage, 4, 'FALSE', newFileName, 16, 32, 2)
+        print onlyInFiles[i], i
 
-print 'done'    
+print 'done'
