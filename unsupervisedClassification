@@ -19,11 +19,13 @@ IdrApi.SetWorkingDir(path)
 onlyInFiles = [f for f in listdir(path) if isfile(join(mypath, f))]
 times = len(onlyInFiles)
 
-
 for i in range(1, times):
     # I need to an if else statement here for only
-    inputImage  = onlyInFiles[i]
-    IdrApi.RunModule('ISODATA',  inputImage + '*proximity.rst*7*Filter2.fil*1', 1, '', '', '', '', 1)
+    
+    if ".rgf" in onlyInFiles[i]:
+        inputImage  = onlyInFiles[i]
+        newFileName = inputImage[0:len(inputImage-4)] + "_isodata"
+        IdrApi.RunModule('ISODATA',  inputImage, 4, TRUE, newFileName, 16, 32, 'RANDOM PARTITION', 1.0, 50, 100, 30, 15, 2)
     print 'run ', i
 
 print 'done'    
