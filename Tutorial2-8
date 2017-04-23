@@ -1,0 +1,88 @@
+#-------------------------------------------------------------------------------
+# Name:        Tutorial 2-8
+# Purpose:     Pick a place and then count how many manholes are on a particular
+              #line
+# Author:      pprzystupa
+#
+# Created:     13/11/2014
+# Copyright:   (c) pprzystupa 2014
+# Licence: Tutorial 2-8 from Allen (2014)
+#-------------------------------------------------------------------------------
+
+#import modules
+#get a particular one
+#characterize it
+#get parameter as text
+#use it to selecte all associated pipes
+#use that to selet and form an invetory of the fixtures attached to these pipes
+#count something an and a field with a particular set of information
+
+#do stuff
+#Sleep
+
+try:
+    import arcpy
+    from arcpy import env
+    arcpy.AddWarning("I me some modulessss")
+
+    #set environment
+    env.workspace = "C:\\Users\\pprzystupa\\Documents\\Autumn_2014\\GEOG499_Python\\GISTPython\\Data\\City of Oleander.gdb\\"
+    env.overwriteOutput = True
+    arcpy.AddWarning("I set the workspace")
+
+    #check to make sure that only one feature is selected before continuing
+    fixCount = int(arcpy.GetCount_management("Fixtures").getOutput(0))
+    arcpy.AddWarning("The number of features selected is " + str(fixCount) + " .")
+    if fixCount <> 1:
+        arcpy.AddError("The number of selected features must be only one. Prepare a new selection and try again")
+        raise exception
+    else:
+        arcpy.AddWarning("Only one feature is selected and the script is continuing")
+
+    #Set up a cursor to iterate through the selected row of fixtures
+    #arcpy.da.searchCursor
+    fixCursor = arcpy.da.SearchCursor("Fixtures", "System")
+    for row in fixCursor:
+        systemName = row[0]
+        arcpy.AddWarning("You are Working on the " + systemName + " system.")
+
+    #Selections can only be do ne on feature layers, so create one for the lines
+    stormLinesLayer = arcpy.MakeFeatureLayer_management("MainLat")
+    #...and one for fixtures
+    fixturesLayer = arcpy.MakeFeatureLayer_management("C:\\Users\\pprzystupa\\Documents\Autumn_2014\\GEOG499_Python\\GISTPython\\Data\\StormDrainUtility.gdb\\Storm_Drains\\Fixtures")
+    arcpy.AddWarning("I made the two feature layers")
+
+    #use the selected outfall to selelct the first line(s) conected to it
+    arcpy.SelectLayerByLocation_management(stormLinesLayer, "INTERSECT", "Fixtures","", "NEW_SELECTION")
+    arcpy.AddWarning("I selected by loction")
+
+    #With the first line feature selected, us it to select the other lines
+    lineCount1 = int(arcpy.GetCount_management(stormLinesLayer).getOutput(0))
+    #Make a Second one
+    lineCount2 = 0
+    arcpy.AddWarning("made some line counts")
+    #set up a while statemetn = it will end when the current selection equals the new selection
+    while lineCount1 <> lineCount2:
+        lineCount1 = lineCount2
+        #Use selected features to select intersecting features
+        #Selection type will be "add to selection"
+        arcpy.SelectLayerByLocation_management(stormLinesLayer, "INTERSECT", stormLinesLayer, "", "ADD_TO_SELECTION")
+        #get count and match against previous count to see if the entire drainage shed system is selected
+        lineCount2 = int(arcpy.GetCount_management(stormLinesLayer).getOutput(0))
+        #Message to keep track of selections
+        arcpy.AddWarning("Previous set = " + str(lineCount1) + " and the new set = " + str(lineCount2))
+        arcpy.AddWarning("Finished selecting: " + str(lineCount1) + " = " + str(lineCount2))
+        arcpy.SelectLayerByLocation_management(fixturesLayer, "INTERSECT", stormLinesLayer, "", "NEW_SELECTION")
+        fixCount = int(arcpy.GetCount_management(fixturesLayer).getOutput(0))
+        arcpy.AddWarning("The Count of fixtures is " + str(fixCount) + " .")
+        #perform a summary statistcis process on the storm drain lines
+        #Statistics_analysis (in_table, out_table, statistics_fields, {case_field})
+        systemName = systemName.replace("-", "_")
+        newName1 = systemName + "_StormLineSummary"
+        newName2 = systemName + "_StormFixtureSummary"
+        arcpy.Statistics_analysis(stormLinesLayer, "C:\\Users\\pprzystupa\\Documents\\Autumn_2014\\GEOG499_Python\\GISTPython\\MyExercises\\MyAnswers.gdb\\\\" + newName1, [["Shape_Length", "SUM"]], "PipeSize")
+        #perform a summary statitcs process on the fixtures
+        arcpy.Statistics_analysis(fixturesLayer, "C:\\Users\\pprzystupa\\Documents\\Autumn_2014\\GEOG499_Python\\GISTPython\\MyExercises\\MyAnswers.gdb\\\\" + newName2, [["Type", "COUNT"]], "Type")
+except:
+    arcpy.AddWarning("I failed, sorry....go take a break")
+    print "I failed, sorry... go take a break"
