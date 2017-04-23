@@ -1,0 +1,27 @@
+import win32com.client
+import os
+from os import listdir
+from os.path import isfile, join
+
+
+IdrApi = win32com.client.Dispatch('idrisi32.IdrisiAPIServer')
+
+# get current script dir
+# if data and the script are not in the same location,
+# comment out the next line and replace 'path' with directory of your data
+# pathDirectory = need to put the path that I am interested in putting the files
+# path = the path for where I'm getting the information
+# set current working dir
+IdrApi.SetWorkingDir(pathDirectory)
+IdrApi.SetWorkingDir(path)
+
+#create a list of files from the location
+onlyInFiles = [f for f in listdir(path) if isfile(join(mypath, f))]
+times = len(onlyInFiles)
+
+for i in range(1, times):
+    inputImage  = onlyInFiles[i]
+    IdrApi.RunModule('ISODATA',  inputImage + '*proximity.rst*7*Filter2.fil*1', 1, '', '', '', '', 1)
+    print 'run ', i
+
+print 'done'    
