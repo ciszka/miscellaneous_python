@@ -9,8 +9,8 @@ IdrApi = win32com.client.Dispatch('idrisi32.IdrisiAPIServer')
 # if data and the script are not in the same location,
 # comment out the next line and replace 'path' with directory of your data
 
-pathDirectory = "E:\\RemoteSensingClass\\Project\\TerrSetFiles\\OutsideStudyArea"
-path = "E:\\RemoteSensingClass\\Project\\TerrSetFiles\\OutsideStudyArea"
+pathDirectory = "H:\\RemoteSensingClass\\Project\\TerrSetFiles\\OutsideStudyArea"
+path = "H:\\RemoteSensingClass\\Project\\TerrSetFiles\\OutsideStudyArea"
 
 # set current working dir
 IdrApi.SetWorkingDir(pathDirectory)
@@ -25,7 +25,10 @@ for i in range(1, times):
         inputImage  = onlyInFiles[i]
         newFileName = inputImage[0:(len(inputImage)-4)] + "_isodata.rst"
         print newFileName
-        IdrApi.RunModule('ISODATA', inputImage + newFilName + '*16*16*1', 1, '', '', '', '', 1)
+        # rastergroup*mask*isoclusters*8*12*2*2.0*25*100*30*15*1"
+
+        parameters =  "*none*" + newFileName + "*8*12*2*2.0*25*100*30*15*1"
+        IdrApi.RunModule('ISODATA', inputImage + parameters, 1, '', '', '', '', 1)
         print onlyInFiles[i], i
 
 print 'done'
